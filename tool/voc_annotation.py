@@ -1,13 +1,13 @@
 import xml.etree.ElementTree as ET
 from os import getcwd
 
-sets=[('2007', 'train'), ('2007', 'val'), ('2007', 'test')]
+sets=['train', 'val', 'test']
 
-# classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+# classes = ["aeroplane", "bicycle", "bird", "boat"]
 classes = ["head"]
 
-def convert_annotation(year, image_id, list_file):
-    in_file = open('VOCdevkit/VOC%s/Annotations/%s.xml'%(year, image_id))
+def convert_annotation(image_id, list_file):
+    in_file = open('Annotations/%s.xml'%(image_id))
     tree=ET.parse(in_file)
     root = tree.getroot()
 
@@ -29,12 +29,12 @@ def convert_annotation(year, image_id, list_file):
 
 wd = getcwd()
 
-for year, image_set in sets:
-    image_ids = open('VOCdevkit/VOC%s/ImageSets/Main/%s.txt'%(year, image_set)).read().strip().split()
-    list_file = open('%s_%s.txt'%(year, image_set), 'w')
+for image_set in sets:
+    image_ids = open('ImageSets/Main/%s.txt'%(image_set)).read().strip().split()
+    list_file = open('%s.txt'%(image_set), 'w')
     for image_id in image_ids:
-        list_file.write('%s/VOCdevkit/VOC%s/JPEGImages/%s.jpg'%(wd, year, image_id))
-        convert_annotation(year, image_id, list_file)
+        list_file.write('%s/JPEGImages/%s.jpg'%(wd, image_id))
+        convert_annotation(image_id, list_file)
         list_file.write('\n')
     list_file.close()
 
