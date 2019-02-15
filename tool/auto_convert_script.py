@@ -5,6 +5,16 @@ import random
 import cv2
 import subprocess
 
+'''
+the classes:
+    You defined in your 'model_data/my_classes.txt'
+    When you lable your data use the labelImg
+It should be the same
+'''
+
+# classes = ["aeroplane", "bicycle", "bird", "boat"]
+classes = ["circle"]
+
 # -------------------------------------------------------------------------------------------------
 print ('change png and jpeg to jpg')
 files = os.listdir('JPEGImages')
@@ -59,9 +69,6 @@ ftest .close()
 # -------------------------------------------------------------------------------------------------
 print ('from ImageSets/Main/*.txt make train data')
 sets=['train', 'val', 'test']
-
-# classes = ["aeroplane", "bicycle", "bird", "boat"]
-classes = ["head"]
 
 def convert_annotation(image_id, list_file):
     in_file = open('Annotations/%s.xml'%(image_id))
