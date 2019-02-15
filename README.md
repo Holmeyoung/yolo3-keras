@@ -26,7 +26,7 @@
   $ tree -N
   .
   ├── Annotations
-  │   └── PartB_02404.xml
+  │   └── 0.xml
   ├── ImageSets
   │   └── Main
   │       ├── test.txt
@@ -34,7 +34,7 @@
   │       ├── trainval.txt
   │       └── val.txt
   └── JPEGImages
-      └── PartB_02404.jpg
+      └── 0.jpg
   ```
 
 - 文件解析
@@ -72,7 +72,7 @@
   
 - 增加了当 `xml` 中 `xmin`、`ymin`等包含小数的问题
 
-> 注：因为 `train.py` 只用到一个训练数据集文件并会自动将其中的数据按照 `9:1` 的比例切分为训练集和验证集，所以我们在得到 `2007_train.txt`、 `2007_test.txt`、 `2007_val.txt` 数据集切分文件之后应将其合并为一个 `train.txt` 文件并将其指定为训练数据集以避免训练数据的浪费
+> 注：因为 `train.py` 只用到一个训练数据集文件并会自动将其中的数据按照 `9:1` 的比例切分为训练集和验证集，所以我们在得到 `train.txt`、 `test.txt`、 `val.txt` 数据集切分文件之后应将其合并为一个 `train.txt` 文件并将其指定为训练数据集以避免训练数据的浪费
 
 ### tool/wider_annotation.py
 用于将 [**WIDER FACE**](http://mmlab.ie.cuhk.edu.hk/projects/WIDERFace/) 数据集转化为 `yolo3` 的训练集
@@ -162,7 +162,22 @@ x1, y1, w, h, blur, expression, illumination, invalid, occlusion, pose
 "path_to_image": (xmin, ymin, xmax, ymax);
 ```
 
+
+
+### tool/change_tail.py
+
+用于将 `jpeg`、`png` 后缀图像统一修改为 `jpg` 后缀并检测图片是否为空
+
+
+
+### tool/auto_convert_script.py
+
+将 `change_tail.py` 、`make_main_txt.py` 、`voc_annotation.py` 合并为一个自动化执行脚本
+
+
+
 ### yolo 格式的数据集究竟什么样
+
 ```sh
 One row for one image:
 Row format: image_file_path box1 box2 ... boxN
@@ -252,53 +267,27 @@ path/to/img2.jpg 120,300,250,600,2
   标注的图像框坐标 + 图像框内图像对应的类别ID（索引）
   例：
   ```python
-  classes = ["aeroplane", "bicycle", "bird", "boat", "bottle", "bus", "car", "cat", "chair", "cow", "diningtable", "dog", "horse", "motorbike", "person", "pottedplant", "sheep", "sofa", "train", "tvmonitor"]
+  classes = ["aeroplane", "bicycle", "bird", "boat"]
   ```
   则 `bird` 类别对应的 ID 为 `2`
 
-### 目录结构
-```sh
-$ tree -N                                   
-.
-├── 2007_test.txt
-├── 2007_train.txt
-├── 2007_val.txt
-├── voc_annotation.py
-└── VOCdevkit
-    └── VOC2007
-        ├── Annotations
-        │   └── PartB_02404.xml
-        ├── ImageSets
-        │   └── Main
-        │       ├── test.txt
-        │       ├── train.txt
-        │       ├── trainval.txt
-        │       └── val.txt
-        ├── JPEGImages
-        │   └── PartB_02404.jpg
-        └── tool_make_main_txt.py
 
-6 directories, 11 files
-```
 
-### 自己标注数据训练
+### 标注训练数据
+
 - 通过图像标注工具 [**tzutalin/labelImg**](https://github.com/tzutalin/labelImg) 标注训练图片，具体见教程 [【AI实战】手把手教你训练自己的目标检测模型（SSD篇）](https://my.oschina.net/u/876354/blog/1927351)。生成如下目录
 
   ```sh
   .
   ├── Annotations
-  │   ├── PartA_00000.xml
-  │   ├── PartA_00001.xml
-  │   └── PartB_02404.xml
+  │   └── 0.xml
   ├── ImageSets
   │   └── Main
-  ├── JPEGImages
-  │   ├── PartA_00000.jpg
-  │   ├── PartA_00001.jpg
-  │   └── PartB_02404.jpg
-  └── tree
-  ```
+  └── JPEGImages
+      └── 0.jpg
   
+  ```
+
   - `Annotations`
     里面是 `xml` 文件。由 `labelImg` 生成， 存储着图像名、图像中的物体类别、各个物体的坐标位置等信息
 
@@ -307,27 +296,48 @@ $ tree -N
 
   - `ImageSets`
     下一步用到，用于存储切分的 `txt` 文件
-  
+
   这一步：主要根据图像标注工具labelImg，基于图片，采用手动标注方式，生成物体坐标及对应类别的xml文件
 
-- 执行 `tool/make_main_txt.py`
+  
+
+- 执行 `tool/auto_convert_script.py`
   具体参数说明见上
-  
-  - 修改 `trainval_percent` 、`train_percent`
-  
+
   - 将文件放置于 `Annotations` `同级`目录
-  
+
+    目录结构如下
+
+    ```sh
+    $ tree -N            
+    .
+    ├── auto_convert_script.py
+    ├── Annotations
+    │   └── 0.xml
+    ├── ImageSets
+    │   └── Main
+    └── JPEGImages
+        └── 0.jpg
+    
+    4 directories, 3 files
+    ```
+
+    
+
   - 运行
     ```sh
-    python make_main_txt.py
+    python auto_convert_script.py
     ```
-  
+    
+    
+
   - 生成如下目录
     ```sh
     $ tree -N
     .
+    ├── auto_convert_script.py
     ├── Annotations
-    │   └── PartB_02404.xml
+    │   └── 0.xml
     ├── ImageSets
     │   └── Main
     │       ├── test.txt
@@ -335,51 +345,14 @@ $ tree -N
     │       ├── trainval.txt
     │       └── val.txt
     ├── JPEGImages
-    │   └── PartB_02404.jpg
-    └── tool_make_main_txt.py
-
-    4 directories, 7 files
+    │   └── 0.jpg
+    └── train.txt
+    
+    4 directories, 8 files
     ```
-  这一步：生成 `test.txt`、`train.txt`、`val.txt`
+    这一步：生成 `train.txt`
 
-- 执行 `tool/voc_annotation.py`
-  - 新建 `VOCdevkit/VOC2007` 文件夹，并将 `Annotations` 、`ImageSets`、`JPEGImages` 文件夹拷贝到这个目录下
-  
-  - 将文件放置于 `VOCdevkit` `同级`目录
-  
-  - 修改 `voc_annotation.py` 里的 `clsss` 字段为自己的
-  
-  - 运行
-    ```sh
-    python voc_annotation.py
-    ```
-  
-  - 生成如下目录
-    ```sh
-    $ tree -N                                   
-    .
-    ├── 2007_test.txt
-    ├── 2007_train.txt
-    ├── 2007_val.txt
-    ├── voc_annotation.py
-    └── VOCdevkit
-        └── VOC2007
-            ├── Annotations
-            │   └── PartB_02404.xml
-            ├── ImageSets
-            │   └── Main
-            │       ├── test.txt
-            │       ├── train.txt
-            │       ├── trainval.txt
-            │       └── val.txt
-            ├── JPEGImages
-            │   └── PartB_02404.jpg
-            └── tool_make_main_txt.py
 
-    6 directories, 11 files
-    ```
-  这一步：生成 `2007_test.txt`、`2007_train.txt`、`2007_val.txt`
-  > 因为在 `train.py` 中只需要指定一个训练集文件，在训练时其会自动按 9：1 比例切割为训练集和验证集。所以为了避免计算资源的浪费，最好将这一步生成的 txt 文件 `合并为一个文件`
 
 - 下载预加载权重
   - 下载yolo权重文件 `yolov3.weights` 
@@ -387,7 +360,7 @@ $ tree -N
     [下载地址](https://pjreddie.com/media/files/yolov3.weights)
     
     下载后放置于 `model_data` 文件夹内
-  
+
   - 转化权重文件为 `keras` 格式
     ```sh
     python convert.py -w yolov3.cfg model_data/yolov3.weights model_data/yolo_weights.h5
@@ -409,7 +382,7 @@ $ tree -N
   - 修改预加载权重模型位置 `weights_path='model_data/yolo_weights.h5'`
 
   - 修改预训练过程的 `batch_size` 、`epoch`
-  
+
   - 修改训练过程的 `batch_size` 、`epoch`
 
   运行 `train.py`
