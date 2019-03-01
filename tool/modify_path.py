@@ -12,4 +12,4 @@ for f in files:
         print ('xml format error:', f)
         continue
     # re.sub(str to be changed, str to change)
-    open('tmp/'+f, 'w').write(re.sub(r'/Users/apple/Desktop/data/JPEGImages/', "/root/tmp/data/JPEGImages/", open("Annotations/"+f).read()))
+    open('tmp/'+f, 'w').write(re.sub(r'/Users/apple/Desktop/data/JPEGImages/', r'/root/tmp/data/JPEGImages/', open('Annotations/'+f).read()))
