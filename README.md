@@ -209,7 +209,7 @@ python demo.py
 
 ```sh
 wget https://pjreddie.com/media/files/yolov3.weights
-python convert.py yolov3.cfg yolov3.weights model_data/yolo.h5
+python convert.py -w yolov3.cfg model_data/yolov3.weights model_data/yolo_weights.h5
 python yolo_video.py [OPTIONS...] --image, for image detection mode, OR
 python yolo_video.py [video_path] [output_path (optional)]
 ```
